@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scu.intelligentdoorplateback.mapper.RecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.scu.intelligentdoorplateback.model.domain.Record">
+        <id column="id" property="id" />
+        <result column="qr_id" property="qrId" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="apply_id" property="applyId"/>
+        <result column="is_rented" property="isRented" />
+        <result column="is_deleted" property="deleted" />
+    </resultMap>
+
+    <select id="getRecordWithOwner" resultMap="BaseResultMap">
+        SELECT r.*
+        FROM record r LEFT JOIN qrcode q ON q.id=r.qr_id
+        WHERE q.user_id = #{userid}
+    </select>
+
+</mapper>

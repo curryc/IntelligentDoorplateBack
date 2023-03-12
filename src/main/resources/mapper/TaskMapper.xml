@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scu.intelligentdoorplateback.mapper.TaskMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.scu.intelligentdoorplateback.model.domain.Task">
+        <id column="id" property="id"/>
+        <result column="qr_id" property="qrId"/>
+        <result column="user_id" property="userId"/>
+        <result column="name" property="name"/>
+        <result column="type" property="type"/>
+        <result column="is_completed" property="isCompleted"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="count" property="count"/>
+        <result column="description" property="description"/>
+        <result column="is_deleted" property="deleted"/>
+    </resultMap>
+
+    <resultMap id="TaskWithHost" type="com.scu.intelligentdoorplateback.model.vo.TaskQrcodeVO" extends="BaseResultMap">
+        <association property="host" javaType="com.scu.intelligentdoorplateback.model.domain.User">
+            <id column="uid" property="id"/>
+            <result column="uname" property="name"/>
+            <result column="ugender" property="gender"/>
+            <result column="uid_number" property="idNumber"/>
+            <result column="uphone_number" property="phoneNumber"/>
+            <result column="uemail" property="email"/>
+            <result column="uaddress" property="address"/>
+            <result column="ulongitude" property="longitude"/>
+            <result column="ulatitude" property="latitude"/>
+            <result column="uis_residence" property="isResidence"/>
+            <result column="urole_id" property="roleId"/>
+            <result column="uis_deleted" property="deleted"/>
+        </association>
+    </resultMap>
+
+    <select id="pageLocation" resultMap="TaskWithHost">
+        SELECT t.*,q.address as address, q.longitude as longitude, q.latitude as latitude,q.is_rented as rented, u.id as uid,
+               u.name as uname, u.gender as ugender, u.id_number as uid_number, u.phone_number as uphone_number, u.email as uemail,
+               u.address as uaddress, u.longitude as ulongitude, u.latitude as ulatitude, u.is_residence as uis_residence,
+               u.role_id as urole_id, u.is_deleted as uis_deleted
+        FROM (task t LEFT JOIN qrcode q ON t.qr_id = q.id)LEFT JOIN user as u ON q.user_id = u.id
+        <where>
+            t.type = 1 AND
+            t.is_deleted = 0 AND q.is_deleted = 0 AND t.is_completed = 0
+            and q.longitude &lt; #{matrixDTO.right} and q.longitude > #{matrixDTO.left}
+            and q.latitude &lt; #{matrixDTO.top} and q.latitude > #{matrixDTO.bottom}
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scu.intelligentdoorplateback.mapper.ApplyMapper">
+
+<!--     通用查询映射结果 -->
+<!--        apply 表格如下-->
+    <resultMap id="BaseResultMap" type="com.scu.intelligentdoorplateback.model.domain.Apply">
+        <id column="aid" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="processor_id" property="processorId" />
+        <result column="name" property="name" />
+        <result column="gender" property="gender" />
+        <result column="id_number" property="idNumber" />
+        <result column="picture_url" property="pictureUrl"/>
+        <result column="phone_number" property="phoneNumber" />
+        <result column="email" property="email" />
+        <result column="address" property="address" />
+        <result column="verify_status" property="verifyStatus" />
+        <result column="apply_time" property="applyTime" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="res_time" property="resTime" />
+        <result column="res_location" property="resLocation" />
+        <result column="type" property="type" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+
+    <resultMap id="ApplyWithApplicant" type="com.scu.intelligentdoorplateback.model.vo.ApplyWithApplicant" extends="BaseResultMap">
+        <association property="user" javaType="com.scu.intelligentdoorplateback.model.domain.User">
+            <id column="uid" property="id" />
+            <result column="uname" property="name" />
+            <result column="gender" property="gender" />
+            <result column="id_number" property="idNumber" />
+            <result column="phone_number" property="phoneNumber" />
+            <result column="email" property="email" />
+            <result column="address" property="address" />
+            <result column="longitude" property="longitude" />
+            <result column="latitude" property="latitude" />
+            <result column="is_residence" property="isResidence" />
+            <result column="role_id" property="roleId" />
+            <result column="is_deleted" property="deleted" />
+        </association>
+    </resultMap>
+
+    <select id="selectApplyWithApplicant" resultMap="ApplyWithApplicant">
+        SELECT a.id aid,a.processor_id,,a.name,a.gender,
+        FROM apply a LEFT JOIN user u ON a.user_id = u.id
+        <where>
+            a.processor_id = #{id} and
+            a.is_deleted = 0 AND u.is_deleted = 0 AND a.verify_status = 1
+        </where>
+    </select>
+</mapper>
